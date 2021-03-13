@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QuizBrain quizBrain = QuizBrain();
 
@@ -29,6 +30,25 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scores = [];
+
+  bool checkAnswer(answerPicked) {
+    bool rightAnswer = quizBrain.getAnswer();
+
+    setState(() {
+      if (quizBrain.isFinished()) {
+        Alert(context: context, title: "The end", desc: "You've finished the game!").show();
+        quizBrain.reset();
+        scores = [];
+      } else {
+        if (rightAnswer == answerPicked) {
+          scores.add(Icon(Icons.check, color: Colors.green));
+        } else {
+          scores.add(Icon(Icons.close, color: Colors.red));
+        }
+        quizBrain.nextQuestion();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,17 +86,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool rightAnswer = quizBrain.getAnswer();
-
-                rightAnswer ? print('User got it right!') :
-                print('User got it wrong');
-
-                setState(() {
-                  quizBrain.nextQuestion();
-                  scores.add(
-                    Icon(Icons.check, color: Colors.green)
-                  );
-                });
+                checkAnswer(true);
               },
             ),
           ),
@@ -94,17 +104,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool rightAnswer = quizBrain.getAnswer();
-
-                rightAnswer ? print('User got it wrong!') :
-                print('User got it right');
-
-                setState(() {
-                  quizBrain.nextQuestion();
-                  scores.add(
-                    Icon(Icons.close, color: Colors.red)
-                  );
-                });
+                checkAnswer(false);
               },
             ),
           ),
